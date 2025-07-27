@@ -1,0 +1,121 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Frontend build output
+frontend/build/
+frontend/dist/
+
+# Backend build output
+backend/dist/
+backend/build/
+
+# React specific
+frontend/.eslintcache
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# AWS CDK
+infrastructure/cdk.out/
+infrastructure/node_modules/
+
+# Docker
+.dockerignore
+
+# Redis dump file
+dump.rdb
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+
+# Local database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Cache files
+.cache/
+*.cache
+
+# Testing
+coverage/
+.nyc_output/
+
+# Build artifacts
+dist/
+build/
+out/
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Package files
+*.tgz
+*.tar.gz

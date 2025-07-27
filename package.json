@@ -1,0 +1,17 @@
+{
+  "name": "force-monitor",
+  "version": "1.0.0",
+  "description": "Salesforce Org Limits Monitoring SaaS",
+  "scripts": {
+    "setup": "./setup.sh",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm start",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run build:backend && npm run build:frontend",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install"
+  },
+  "keywords": ["salesforce", "monitoring", "saas", "limits"],
+  "author": "",
+  "license": "MIT"
+}
