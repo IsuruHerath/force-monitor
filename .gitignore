@@ -118,4 +118,8 @@ out/
 
 # Package files
 *.tgz
-*.tar.gz
+*.tar.gz# Planning documents (local only)
+implementation-plan.md
+phase*-implementation-guide.md
+phase-integration-guide.md
+cost-breakdown.md
