@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String?
+  lastName  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  organizations UserOrganization[]
+
+  @@map("users")
+}
+
+model UserOrganization {
+  id           String   @id @default(cuid())
+  userId       String
+  name         String   // User-defined name for the org
+  orgId        String   // Salesforce org ID
+  instanceUrl  String   // Salesforce instance URL
+  accessToken  String   // Encrypted access token
+  refreshToken String?  // Encrypted refresh token
+  environment  String   @default("production") // "production" or "sandbox"
+  isActive     Boolean  @default(true)
+  lastSync     DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, orgId]) // Prevent duplicate org connections per user
+  @@map("user_organizations")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String?  // Optional for backwards compatibility
+  sessionId String   @unique // The session ID used in Phase 1
+  data      Json     // Session data (access token, instance URL, etc.)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("sessions")
+}

@@ -1,15 +1,26 @@
 import { Request, Response } from 'express';
 import { SessionService } from '../services/sessionService';
 import { SalesforceService } from '../services/salesforceService';
+import { OrganizationService } from '../services/organizationService';
+import { AuthenticatedRequest } from '../middleware/authMiddleware';
 
 export class LimitsController {
   
-  static async getOrgLimits(req: Request, res: Response) {
+  // Backwards compatibility for Phase 1 session-based access
+  static async getOrgLimits(req: AuthenticatedRequest, res: Response) {
     try {
-      const { session: sessionId } = req.query;
-      
+      const { session: sessionId, orgId } = req.query;
+      const userId = req.user?.userId;
+
+      // New Phase 2 approach: authenticated user with orgId
+      if (userId && orgId) {
+        const limits = await OrganizationService.getOrgLimitsWithRetry(orgId as string, userId);
+        return res.json(limits);
+      }
+
+      // Legacy Phase 1 approach: session-based access
       if (!sessionId) {
-        return res.status(400).json({ error: 'Session ID required' });
+        return res.status(400).json({ error: 'Session ID or organization ID required' });
       }
 
       // Get session data
