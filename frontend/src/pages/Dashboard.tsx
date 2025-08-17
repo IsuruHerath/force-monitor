@@ -5,7 +5,6 @@ import { CategorizedLimits } from '../components/CategorizedLimits';
 import { TableView } from '../components/TableView';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { OrganizationSelector } from '../components/OrganizationSelector';
-import { Navigation } from '../components/Navigation';
 import { apiService } from '../services/apiService';
 import { OrgLimits } from '../types/salesforce';
 import { useAuth } from '../contexts/AuthContext';
@@ -125,9 +124,6 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Show navigation only for authenticated users */}
-      {isAuthenticated && <Navigation />}
-      
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">

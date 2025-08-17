@@ -19,8 +19,15 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Phase 3: Subscription and preferences
+  subscriptionTier String   @default("free") // "free", "pro", "enterprise"
+  subscriptionEndsAt DateTime?
+  emailNotifications Boolean  @default(true)
+  alertFrequency String   @default("immediate") // "immediate", "daily", "weekly"
+
   // Relationships
   organizations UserOrganization[]
+  alerts        Alert[]
 
   @@map("users")
 }
@@ -41,6 +48,9 @@ model UserOrganization {
 
   // Relationships
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  limitHistory OrgLimitHistory[]
+  alerts       Alert[]
+  analytics    AnalyticsSnapshot[]
 
   @@unique([userId, orgId]) // Prevent duplicate org connections per user
   @@map("user_organizations")
@@ -55,4 +65,132 @@ model Session {
   createdAt DateTime @default(now())
 
   @@map("sessions")
+}
+
+// Phase 3: Historical Data Tracking
+model OrgLimitHistory {
+  id             String   @id @default(cuid())
+  organizationId String
+  orgId          String   // Salesforce org ID for reference
+  collectedAt    DateTime @default(now())
+  
+  // Limit data snapshot (JSON structure matching Salesforce API)
+  limitsData     Json     // Complete limits response from Salesforce
+  
+  // Key metrics extracted for fast querying
+  apiRequestsUsed      Int?
+  apiRequestsMax       Int?
+  dataStorageUsed      Float? // in MB
+  dataStorageMax       Float? // in MB
+  fileStorageUsed      Float? // in MB
+  fileStorageMax       Float? // in MB
+  
+  // Calculated fields
+  apiUsagePercentage   Float?
+  dataUsagePercentage  Float?
+  fileUsagePercentage  Float?
+  
+  // Relationships
+  organization UserOrganization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  @@index([organizationId, collectedAt])
+  @@index([orgId, collectedAt])
+  @@map("org_limit_history")
+}
+
+// Phase 3: Alert System
+model Alert {
+  id             String   @id @default(cuid())
+  userId         String
+  organizationId String?  // Optional: alert for specific org or all orgs
+  
+  // Alert configuration
+  name           String   // User-defined alert name
+  limitType      String   // "api", "dataStorage", "fileStorage", "custom"
+  threshold      Float    // Percentage threshold (e.g., 80.0 for 80%)
+  condition      String   @default("greater_than") // "greater_than", "less_than", "equals"
+  isActive       Boolean  @default(true)
+  
+  // Notification settings
+  emailEnabled   Boolean  @default(true)
+  frequency      String   @default("immediate") // "immediate", "daily", "weekly"
+  
+  // Alert tracking
+  lastTriggered  DateTime?
+  triggerCount   Int      @default(0)
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  // Relationships
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization UserOrganization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  notifications AlertNotification[]
+  
+  @@map("alerts")
+}
+
+// Phase 3: Alert Notifications Log
+model AlertNotification {
+  id        String   @id @default(cuid())
+  alertId   String
+  
+  // Notification details
+  type      String   // "email", "webhook" (future)
+  status    String   // "sent", "failed", "pending"
+  recipient String   // Email address or webhook URL
+  subject   String?  // Email subject or notification title
+  message   String?  // Notification content
+  
+  // Trigger context
+  triggerValue    Float?   // The value that triggered the alert
+  thresholdValue  Float?   // The threshold that was crossed
+  orgId          String?  // Which org triggered the alert
+  
+  sentAt         DateTime?
+  createdAt      DateTime @default(now())
+  
+  // Relationships
+  alert Alert @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  
+  @@index([alertId, createdAt])
+  @@map("alert_notifications")
+}
+
+// Phase 3: Analytics and Insights
+model AnalyticsSnapshot {
+  id             String   @id @default(cuid())
+  organizationId String
+  snapshotDate   DateTime @default(now())
+  period         String   // "daily", "weekly", "monthly"
+  
+  // Aggregated metrics
+  avgApiUsage        Float?
+  maxApiUsage        Float?
+  avgDataUsage       Float?
+  maxDataUsage       Float?
+  avgFileUsage       Float?
+  maxFileUsage       Float?
+  
+  // Trend analysis
+  apiTrend           String? // "increasing", "decreasing", "stable"
+  dataTrend          String?
+  fileTrend          String?
+  
+  // Growth rates (percentage change from previous period)
+  apiGrowthRate      Float?
+  dataGrowthRate     Float?
+  fileGrowthRate     Float?
+  
+  // Insights and recommendations
+  insights           Json?   // AI-generated insights and recommendations
+  
+  createdAt          DateTime @default(now())
+  
+  // Relationships
+  organization UserOrganization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  @@unique([organizationId, snapshotDate, period])
+  @@index([organizationId, period])
+  @@map("analytics_snapshots")
 }

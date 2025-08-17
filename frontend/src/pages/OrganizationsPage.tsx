@@ -3,7 +3,6 @@ import { useOrganizations } from '../contexts/OrganizationContext';
 import { apiService } from '../services/apiService';
 import { Button } from '../components/Button';
 import { LoadingSpinner } from '../components/LoadingSpinner';
-import { Navigation } from '../components/Navigation';
 
 export const OrganizationsPage: React.FC = () => {
   const {
@@ -69,7 +68,6 @@ export const OrganizationsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Organizations</h1>

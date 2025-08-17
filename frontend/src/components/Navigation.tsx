@@ -59,6 +59,17 @@ export const Navigation: React.FC = () => {
               🏢 Organizations
             </Link>
 
+            <Link
+              to="/analytics"
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                isActive('/analytics')
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              📈 Analytics
+            </Link>
+
             {/* Selected org indicator */}
             {selectedOrganization && (
               <div className="flex items-center space-x-2 px-3 py-1 bg-gray-100 rounded-lg">
